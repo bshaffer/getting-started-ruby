@@ -13,6 +13,13 @@
 # limitations under the License.
 #! /bin/bash
 
+if [ $# -ne 1 ]; then
+    echo $0: usage: setup.sh STEP_NAME
+    exit 1
+fi
+
+STEP_NAME=$1
+
 TEST_DIR=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )/../$STEP_NAME
 
 # use example database config
@@ -23,6 +30,9 @@ fi
 # use example settings config
 if [ -a $TEST_DIR/config/database.example.yml ]; then
   cp $TEST_DIR/config/database.example.yml $TEST_DIR/config/database.yml
+  if [ ! -z "$GCLOUD_PROJECT_ID" ]; then
+    sed -i -e "s/your-project-id/$GCLOUD_PROJECT_ID/g" $TEST_DIR/config/database.yml
+  fi
 fi
 
 if [ $STEP_NAME = '2-cloud-datastore' ]; then

@@ -36,6 +36,10 @@ class E2E
 
       # use the poltergeist (phantomjs) driver for the test
       Capybara.current_driver = :poltergeist
+
+      Capybara.register_driver :poltergeist do |app|
+        Capybara::Poltergeist::Driver.new(app, {debug: true})
+      end
     end
 
     def deploy(step_name, build_id = nil)
@@ -69,6 +73,9 @@ class E2E
         return $?.to_i
       end
 
+      # sleeping 1 to ensure URL is callable
+      sleep 1
+
       # run the specs for the step, but use the remote URL
       @url = "https://#{version}-dot-#{project_id}.appspot.com"
 
@@ -98,6 +105,7 @@ class E2E
     end
 
     def url
+      self.check()
       @url
     end
 
